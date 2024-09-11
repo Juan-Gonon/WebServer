@@ -1,5 +1,12 @@
-interface WebServer {
-  web: string
-}
+import http from 'http'
 
-console.log('WebServer')
+const server = http.createServer((req, res) => {
+  console.log(req.url)
+
+  res.write('Hola Mundo')
+  res.end()
+})
+
+server.listen(8080, () => {
+  console.log('server running on port 8080')
+})
