@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import http from 'http'
 import fs from 'fs'
 
@@ -22,10 +23,21 @@ const server = http.createServer((req, res) => {
     })
 
     res.end(htmlFile)
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/html' })
-    res.end()
+    return
   }
+
+  if (req.url?.endsWith('.js')) {
+    res.writeHead(200, {
+      'Content-Type': 'application/javascript'
+    })
+  } else if (req.url?.endsWith('.css')) {
+    res.writeHead(200, {
+      'Content-Type': 'text/css'
+    })
+  }
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  const responseContent = fs.readFileSync(`./public${req.url}`, 'utf-8')
+  res.end(responseContent)
 })
 
 server.listen(8080, () => {
