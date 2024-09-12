@@ -26,5 +26,8 @@
     "parserOptions": {
       "project": "./tsconfig.json"
     }
+  },
+  "dependencies": {
+    "express": "4.21.0"
   }
 }
