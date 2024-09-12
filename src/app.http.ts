@@ -1,11 +1,8 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import http2 from 'http2'
+import http from 'http'
 import fs from 'fs'
 
-const server = http2.createSecureServer({
-  key: fs.readFileSync('./keys/server.key'),
-  cert: fs.readFileSync('./keys/server.crt')
-}, (req, res) => {
+const server = http.createServer((req, res) => {
   console.log(req.url)
 
   // res.writeHead(200, {
@@ -38,15 +35,9 @@ const server = http2.createSecureServer({
       'Content-Type': 'text/css'
     })
   }
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    const responseContent = fs.readFileSync(`./public${req.url}`, 'utf-8')
-    res.end(responseContent)
-  } catch (error) {
-    res.writeHead(404, { 'Content-Type': 'text/html' })
-    res.end()
-  }
+  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  const responseContent = fs.readFileSync(`./public${req.url}`, 'utf-8')
+  res.end(responseContent)
 })
 
 server.listen(8080, () => {
