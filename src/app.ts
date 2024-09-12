@@ -1,10 +1,12 @@
+import { Server } from './presentation/server'
 
-(
-  () => {
-    main()
+void (
+  async (): Promise<void> => {
+    await main()
   }
 )()
 
-function main (): void {
-  console.log('main')
+async function main (): Promise<void> {
+  const server = new Server()
+  await server.start()
 }
