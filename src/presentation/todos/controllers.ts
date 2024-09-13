@@ -22,7 +22,19 @@ export class TodosController {
   }
 
   public createTodo = (req: Request, res: Response): void => {
-    const body = req.body
-    res.json(body)
+    const { text } = req.body
+
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!text) res.status(400).json({ error: 'Text property is required' })
+
+    const newTodo = {
+      id: todos.length + 1,
+      text,
+      createAt: null
+
+    }
+
+    todos.push(newTodo)
+    res.json(newTodo)
   }
 }
