@@ -17,11 +17,11 @@ export class TodosController {
     return res.json(todos)
   }
 
-  public getTodosById = (req: Request, res: Response): Response => {
+  public getTodosById = async (req: Request, res: Response): Promise<Response> => {
     const id = +req.params.id
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
-    const todo = todos.find((todo) => todo.id === id)
-    return (todo !== undefined) ? res.json(todo) : res.status(404).json({ error: `TODO with id ${id} not found` })
+    const todo = await prisma.todo.findMany({ where: { id } })
+    return (todo.length > 0) ? res.json(todo) : res.status(404).json({ error: `TODO with id ${id} not found` })
   }
 
   public createTodo = async (req: Request, res: Response): Promise<void> => {
