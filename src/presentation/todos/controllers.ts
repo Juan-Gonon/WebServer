@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
+import { prisma } from '../../data/postgres'
 
 const todos = [
   { id: 1, text: 'Buy milk', completedAt: new Date() },
@@ -22,21 +23,19 @@ export class TodosController {
     return (todo !== undefined) ? res.json(todo) : res.status(404).json({ error: `TODO with id ${id} not found` })
   }
 
-  public createTodo = (req: Request, res: Response): void => {
+  public createTodo = async (req: Request, res: Response): Promise<void> => {
     const { text } = req.body
 
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!text) res.status(400).json({ error: 'Text property is required' })
 
-    const newTodo = {
-      id: todos.length + 1,
-      text,
-      completedAt: null
+    const todo = await prisma.todo.create({
+      data: {
+        text
+      }
+    })
 
-    }
-
-    todos.push(newTodo)
-    res.json(newTodo)
+    res.json(todo)
   }
 
   public updateTodo = (req: Request, res: Response): Response | undefined => {
