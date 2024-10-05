@@ -67,6 +67,11 @@ export class TodosController {
     if (!todo) return res.status(404).json({ error: `Todo with id ${id} not found` })
     // todos.splice(todos.indexOf(todo), 1)
     const deleted = await prisma.todo.delete({ where: { id } })
-    return res.json({ todo, deleted })
+
+    if (!deleted) {
+      return res.status(400).json({ error: `Todo with id ${id} not found` })
+    }
+
+    return res.json(deleted)
   }
 }
