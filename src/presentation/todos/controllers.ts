@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
 import { prisma } from '../../data/postgres'
-import { CreateTodoDto } from '../../domain/DTOs'
+import { CreateTodoDto, UpdateTodoDTO } from '../../domain/DTOs'
 
 export class TodosController {
   // DI
@@ -35,24 +35,22 @@ export class TodosController {
 
   public updateTodo = async (req: Request, res: Response): Promise<Response> => {
     const id = +req.params.id
+    const [error, updateTodoDto] = UpdateTodoDTO.create({ ...req.body, id })
+
+    if (error) return res.status(400).json({ error })
 
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
 
     const todo = await prisma.todo.findFirst({ where: { id } })
     if (!todo) return res.status(404).json({ error: `Todo with id ${id} not found` })
 
-    const { text, completedAt } = req.body
+    // const { text, completedAt } = req.body
     // // if (!text) res.status(400).json({ error: 'Text property is required' })
-
-    const newText = text ?? todo.text
-    const newCompletedAt = completedAt === 'null' || completedAt === undefined ? null : new Date(completedAt ?? todo.completedAt)
 
     const updateTodo = await prisma.todo.update({
       where: { id },
-      data: {
-        text: newText,
-        completedAt: newCompletedAt
-      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      data: updateTodoDto!.values
     })
 
     return res.json(updateTodo)
