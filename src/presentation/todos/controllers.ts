@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
 import { prisma } from '../../data/postgres'
+import { CreateTodoDto } from '../../domain/DTOs'
 
 export class TodosController {
   // DI
@@ -19,15 +20,14 @@ export class TodosController {
   }
 
   public createTodo = async (req: Request, res: Response): Promise<Response> => {
-    const { text } = req.body
+    const [error, createTodoDto] = CreateTodoDto.create(req.body)
 
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!text) return res.status(400).json({ error: 'Text property is required' })
+    if (error) return res.status(400).json({ error })
 
     const todo = await prisma.todo.create({
-      data: {
-        text
-      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      data: createTodoDto!
     })
 
     return res.json(todo)
