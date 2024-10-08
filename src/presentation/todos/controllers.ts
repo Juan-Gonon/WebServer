@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
 import { CreateTodoDto, UpdateTodoDTO } from '../../domain/DTOs'
-import { TodoRepository } from '../../domain'
+import { CreateTodo, DeleteTodo, GetTodo, GetTodos, TodoRepository, UpdateTodo } from '../../domain'
 
 export class TodosController {
   // DI
@@ -11,19 +11,20 @@ export class TodosController {
   ) {}
 
   public getTodos = async (req: Request, res: Response): Promise<Response> => {
-    const todos = await this.todoRepository.getAll()
-    return res.json(todos)
+    return await new GetTodos(this.todoRepository)
+      .execute()
+      .then((todos) => res.json(todos))
+      .catch((error) => res.status(400).json({ error: (error as Error).message }))
   }
 
   public getTodosById = async (req: Request, res: Response): Promise<Response> => {
     const id = +req.params.id
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
-    try {
-      const todo = await this.todoRepository.findById(id)
-      return res.json(todo)
-    } catch (error) {
-      return res.status(400).json({ error: (error as Error).message })
-    }
+
+    return await new GetTodo(this.todoRepository)
+      .execute(id)
+      .then((todo) => res.json(todo))
+      .catch((error) => res.status(400).json({ error: (error as Error).message }))
   }
 
   public createTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -32,9 +33,10 @@ export class TodosController {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (error) return res.status(400).json({ error })
 
-    const todo = await this.todoRepository.create(createTodoDto!)
-
-    return res.json(todo)
+    return await new CreateTodo(this.todoRepository)
+      .execute(createTodoDto!)
+      .then((todo) => res.json(todo))
+      .catch((error) => res.status(400).json({ error: (error as Error).message }))
   }
 
   public updateTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -44,9 +46,10 @@ export class TodosController {
 
     if (error) return res.status(400).json({ error })
 
-    const updatedTodo = await this.todoRepository.updateById(updateTodoDto!)
-
-    return res.json(updatedTodo)
+    return await new UpdateTodo(this.todoRepository)
+      .execute(updateTodoDto!)
+      .then((todo) => res.json(todo))
+      .catch((error) => res.status(400).json({ error: (error as Error).message }))
   }
 
   public deleteTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -54,8 +57,9 @@ export class TodosController {
 
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
 
-    const deletedTodo = await this.todoRepository.deleteById(id)
-
-    return res.json(deletedTodo)
+    return await new DeleteTodo(this.todoRepository)
+      .execute(id)
+      .then((todo) => res.json(todo))
+      .catch((error) => res.status(400).json({ error: (error as Error).message }))
   }
 }
