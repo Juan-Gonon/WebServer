@@ -2,10 +2,13 @@
 import { Request, Response } from 'express'
 import { prisma } from '../../data/postgres'
 import { CreateTodoDto, UpdateTodoDTO } from '../../domain/DTOs'
+import { TodoRepository } from '../../domain'
 
 export class TodosController {
   // DI
-  // constructor () {}
+  constructor (
+    private readonly todoRepository: TodoRepository
+  ) {}
 
   public getTodos = async (req: Request, res: Response): Promise<Response> => {
     const todos = await prisma.todo.findMany()
