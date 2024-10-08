@@ -5,7 +5,12 @@ import { CreateTodoDto, TodoDataSource, TodoEntity, UpdateTodoDTO } from '../../
 
 export class TodoDatasourceImpl implements TodoDataSource {
   async create (createTodoDTO: CreateTodoDto): Promise<TodoEntity> {
-    throw new Error('Method not implemented.')
+    const todo = await prisma.todo.create({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      data: createTodoDTO!
+    })
+
+    return TodoEntity.fromObject(todo)
   }
 
   async getAll (): Promise<TodoEntity[]> {
