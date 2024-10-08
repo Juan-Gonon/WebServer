@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
-import { prisma } from '../../data/postgres'
 import { CreateTodoDto, UpdateTodoDTO } from '../../domain/DTOs'
 import { TodoRepository } from '../../domain'
 
@@ -32,35 +32,21 @@ export class TodosController {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (error) return res.status(400).json({ error })
 
-    const todo = await prisma.todo.create({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      data: createTodoDto!
-    })
+    const todo = await this.todoRepository.create(createTodoDto!)
 
     return res.json(todo)
   }
 
   public updateTodo = async (req: Request, res: Response): Promise<Response> => {
     const id = +req.params.id
+    if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
     const [error, updateTodoDto] = UpdateTodoDTO.create({ ...req.body, id })
 
     if (error) return res.status(400).json({ error })
 
-    if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
+    const updatedTodo = await this.todoRepository.updateById(updateTodoDto!)
 
-    const todo = await prisma.todo.findFirst({ where: { id } })
-    if (!todo) return res.status(404).json({ error: `Todo with id ${id} not found` })
-
-    // const { text, completedAt } = req.body
-    // // if (!text) res.status(400).json({ error: 'Text property is required' })
-
-    const updateTodo = await prisma.todo.update({
-      where: { id },
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      data: updateTodoDto!.values
-    })
-
-    return res.json(updateTodo)
+    return res.json(updatedTodo)
   }
 
   public deleteTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -68,15 +54,8 @@ export class TodosController {
 
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
 
-    const todo = await prisma.todo.findFirst({ where: { id } })
-    if (!todo) return res.status(404).json({ error: `Todo with id ${id} not found` })
-    // todos.splice(todos.indexOf(todo), 1)
-    const deleted = await prisma.todo.delete({ where: { id } })
+    const deletedTodo = await this.todoRepository.deleteById(id)
 
-    if (!deleted) {
-      return res.status(400).json({ error: `Todo with id ${id} not found` })
-    }
-
-    return res.json(deleted)
+    return res.json(deletedTodo)
   }
 }
