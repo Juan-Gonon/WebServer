@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
-import { prisma } from '../../../data/postgres'
-import { CreateTodoDto, TodoDataSource, TodoEntity, UpdateTodoDTO } from '../../../domain'
+import { prisma } from '../../data/postgres'
+import { CreateTodoDto, TodoDataSource, TodoEntity, UpdateTodoDTO } from '../../domain'
 
 export class TodoDatasourceImpl implements TodoDataSource {
   async create (createTodoDTO: CreateTodoDto): Promise<TodoEntity> {
