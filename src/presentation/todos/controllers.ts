@@ -11,15 +11,19 @@ export class TodosController {
   ) {}
 
   public getTodos = async (req: Request, res: Response): Promise<Response> => {
-    const todos = await prisma.todo.findMany()
+    const todos = await this.todoRepository.getAll()
     return res.json(todos)
   }
 
   public getTodosById = async (req: Request, res: Response): Promise<Response> => {
     const id = +req.params.id
     if (isNaN(id)) return res.status(400).json({ error: 'ID argument is not a number' })
-    const todo = await prisma.todo.findFirst({ where: { id } })
-    return (todo) ? res.json(todo) : res.status(404).json({ error: `TODO with id ${id} not found` })
+    try {
+      const todo = await this.todoRepository.findById(id)
+      return res.json(todo)
+    } catch (error) {
+      return res.status(400).json({ error: (error as Error).message })
+    }
   }
 
   public createTodo = async (req: Request, res: Response): Promise<Response> => {
