@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/compression": "^1.7.5",
     "@types/express": "4.17.21",
     "@types/node": "^22.5.4",
     "prisma": "^5.20.0",
@@ -31,6 +32,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
+    "compression": "1.7.4",
     "dotenv": "16.4.5",
     "env-var": "7.5.0",
     "express": "4.21.0"
