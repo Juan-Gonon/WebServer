@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { prisma } from '../../../data/postgres'
 import { CreateTodoDto, TodoDataSource, TodoEntity, UpdateTodoDTO } from '../../../domain'
@@ -22,7 +23,15 @@ export class TodoDatasourceImpl implements TodoDataSource {
   }
 
   async updateById (UpdateTodoDTO: UpdateTodoDTO): Promise<TodoEntity> {
-    throw new Error('Method not implemented.')
+    const todo = await this.findById(UpdateTodoDTO.id)
+
+    const updateTodo = await prisma.todo.update({
+      where: { id: todo.id },
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      data: UpdateTodoDTO!.values
+    })
+
+    return TodoEntity.fromObject(updateTodo)
   }
 
   async deleteById (id: number): Promise<TodoEntity> {
