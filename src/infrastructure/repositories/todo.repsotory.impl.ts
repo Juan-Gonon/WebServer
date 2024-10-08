@@ -11,7 +11,7 @@ export class TodoRepositoryImpl implements TodoRepository {
   }
 
   async findById (id: number): Promise<TodoEntity> {
-    return await this.findById(id)
+    return await this.datasource.findById(id)
   }
 
   async updateById (UpdateTodoDTO: UpdateTodoDTO): Promise<TodoEntity> {
