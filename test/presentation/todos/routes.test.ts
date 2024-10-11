@@ -73,4 +73,19 @@ describe('Todo route testing', () => {
 
     expect(body).toEqual({ error: 'Text property is required' })
   })
+
+  it('should return an updated TODO api/todos/:id', async () => {
+    const todo = await prisma.todo.create({ data: todo1 })
+
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todo.id}`)
+      .send({ text: 'Hola mundo updated', completedAt: '2024-10-11' })
+      .expect(200)
+
+    expect(body).toEqual({
+      id: expect.any(Number),
+      text: 'Hola mundo updated',
+      completedAt: '2024-10-11T00:00:00.000Z'
+    })
+  })
 })
