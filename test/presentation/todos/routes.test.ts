@@ -98,4 +98,19 @@ describe('Todo route testing', () => {
 
     expect(body).toEqual({ error: `Todo with id ${todoId} not found` })
   })
+
+  it('should return an updated TODO only the date', async () => {
+    const todo = await prisma.todo.create({ data: todo1 })
+    const updateDate = '2024-10-12T00:00:00.000Z'
+
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todo.id}`)
+      .send({ completedAt: updateDate })
+      .expect(200)
+
+    expect(body).toEqual({
+      ...todo,
+      completedAt: updateDate
+    })
+  })
 })
