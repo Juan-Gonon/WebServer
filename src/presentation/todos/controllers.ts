@@ -12,7 +12,7 @@ export class TodosController {
 
   private readonly handleError = async (res: Response, error: unknown): Promise<Response> => {
     if (error instanceof CustomError) {
-      res.status(error.statusCode).json({ error: error.message })
+      return res.status(error.statusCode).json({ error: error.message })
     }
     return res.status(500).json({ error: 'Internal server error - check logs' })
   }
