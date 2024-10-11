@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { prisma } from '../../data/postgres'
-import { CreateTodoDto, TodoDataSource, TodoEntity, UpdateTodoDTO } from '../../domain'
+import { CreateTodoDto, TodoDataSource, TodoEntity, UpdateTodoDTO, CustomError } from '../../domain'
 
 export class TodoDatasourceImpl implements TodoDataSource {
   async create (createTodoDTO: CreateTodoDto): Promise<TodoEntity> {
@@ -22,7 +22,7 @@ export class TodoDatasourceImpl implements TodoDataSource {
   async findById (id: number): Promise<TodoEntity> {
     const todo = await prisma.todo.findFirst({ where: { id } })
 
-    if (!todo) throw new Error(`Todo with id ${id} not found`)
+    if (!todo) throw new CustomError(`Todo with id ${id} not found`, 404)
 
     return TodoEntity.fromObject(todo)
   }

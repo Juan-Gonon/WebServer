@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Request, Response } from 'express'
 import { CreateTodoDto, UpdateTodoDTO } from '../../domain/DTOs'
-import { CreateTodo, DeleteTodo, GetTodo, GetTodos, TodoRepository, UpdateTodo } from '../../domain'
+import { CreateTodo, CustomError, DeleteTodo, GetTodo, GetTodos, TodoRepository, UpdateTodo } from '../../domain'
 
 export class TodosController {
   // DI
@@ -10,11 +10,18 @@ export class TodosController {
     private readonly todoRepository: TodoRepository
   ) {}
 
+  private readonly handleError = async (res: Response, error: unknown): Promise<Response> => {
+    if (error instanceof CustomError) {
+      res.status(error.statusCode).json({ error: error.message })
+    }
+    return res.status(500).json({ error: 'Internal server error - check logs' })
+  }
+
   public getTodos = async (req: Request, res: Response): Promise<Response> => {
     return await new GetTodos(this.todoRepository)
       .execute()
       .then((todos) => res.json(todos))
-      .catch((error) => res.status(400).json({ error: (error as Error).message }))
+      .catch(async (error) => await this.handleError(res, error))
   }
 
   public getTodosById = async (req: Request, res: Response): Promise<Response> => {
@@ -24,7 +31,7 @@ export class TodosController {
     return await new GetTodo(this.todoRepository)
       .execute(id)
       .then((todo) => res.json(todo))
-      .catch((error) => res.status(400).json({ error: (error as Error).message }))
+      .catch(async (error) => await this.handleError(res, error))
   }
 
   public createTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -36,7 +43,7 @@ export class TodosController {
     return await new CreateTodo(this.todoRepository)
       .execute(createTodoDto!)
       .then((todo) => res.status(201).json(todo))
-      .catch((error) => res.status(400).json({ error: (error as Error).message }))
+      .catch(async (error) => await this.handleError(res, error))
   }
 
   public updateTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -49,7 +56,7 @@ export class TodosController {
     return await new UpdateTodo(this.todoRepository)
       .execute(updateTodoDto!)
       .then((todo) => res.json(todo))
-      .catch((error) => res.status(404).json({ error: (error as Error).message }))
+      .catch(async (error) => await this.handleError(res, error))
   }
 
   public deleteTodo = async (req: Request, res: Response): Promise<Response> => {
@@ -60,6 +67,6 @@ export class TodosController {
     return await new DeleteTodo(this.todoRepository)
       .execute(id)
       .then((todo) => res.json(todo))
-      .catch((error) => res.status(400).json({ error: (error as Error).message }))
+      .catch(async (error) => await this.handleError(res, error))
   }
 }
