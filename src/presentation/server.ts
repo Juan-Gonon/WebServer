@@ -13,6 +13,7 @@ export class Server {
   private readonly port: number
   private readonly publicPath: string
   private readonly routes: Router
+  private serverListener?: any
 
   constructor (options: Options) {
     const { port, publicPath = 'public', routes } = options
@@ -42,8 +43,12 @@ export class Server {
       res.sendFile(indexPath)
     })
 
-    this.app.listen(this.port, () => {
+    this.serverListener = this.app.listen(this.port, () => {
       console.log('Server running on port 3000')
     })
+  }
+
+  public close (): void {
+    this.serverListener?.close()
   }
 }

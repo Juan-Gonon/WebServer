@@ -4,9 +4,13 @@ describe('Todo route testing', () => {
   beforeAll(async () => {
     await testServer.start()
   })
+  afterAll(() => {
+    testServer.close()
+  })
   it('should return TODOs api/todos', async () => {
     const response = await request(testServer.app)
       .get('/api/todos')
+      .expect(200)
 
     console.log(response.body)
   })
