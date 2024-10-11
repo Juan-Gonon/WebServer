@@ -88,4 +88,14 @@ describe('Todo route testing', () => {
       completedAt: '2024-10-11T00:00:00.000Z'
     })
   })
+
+  it('should return 404 if TODO not found', async () => {
+    const todoId = 5
+    const { body } = await request(testServer.app)
+      .put(`/api/todos/${todoId}`)
+      .send({ text: 'Hola mundo UPDATE' })
+      .expect(404)
+
+    expect(body).toEqual({ error: `Todo with id ${todoId} not found` })
+  })
 })

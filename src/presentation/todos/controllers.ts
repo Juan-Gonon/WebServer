@@ -49,7 +49,7 @@ export class TodosController {
     return await new UpdateTodo(this.todoRepository)
       .execute(updateTodoDto!)
       .then((todo) => res.json(todo))
-      .catch((error) => res.status(400).json({ error: (error as Error).message }))
+      .catch((error) => res.status(404).json({ error: (error as Error).message }))
   }
 
   public deleteTodo = async (req: Request, res: Response): Promise<Response> => {
