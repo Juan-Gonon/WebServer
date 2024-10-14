@@ -1,2 +1,7 @@
 .vscode/
 node_modules
+keys/
+.env
+/postgres/
+coverage/
+.env.test
